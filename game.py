@@ -166,9 +166,9 @@ while running:
                 # Check if it's winter
                 season = "Winter"
                 winter = True
-                fpt -= fpt / 2 # During winter you make less food
+                fpt = fpt / 2 # During winter you make less food
                 ttw = 30
-                fpt = 3 # Also, you lose 3 heat per turn without any clothes
+                hpt = 3 # Also, you lose 3 heat per turn without any clothes
                     
             # Handle arrow keys
             if event.key == K_RIGHT and player.pos[0] < MAPWIDTH - 1:
