@@ -28,6 +28,7 @@ winter = False
 running = True # If this is off it plays the end sequence thing
 ttw = 30 # Turns to winter
 clothes = False
+score = 0
 
 # Tilemap tiles
 WATER = 0
@@ -38,12 +39,18 @@ HOUSE = 4
 FARM = 5
 PASTURE = 6
 COTTAGE = 7
+CLOUD = 10
 
 # ------ Map settings ------
 TILESIZE = 40
 MAPWIDTH = 20
 MAPHEIGHT = 10
 # --------------------------
+
+# Cloud stuff
+cloudx = -200
+cloudy = random.randint(0, MAPHEIGHT*TILESIZE)
+cloudClock = pygame.time.Clock()
 
 # Generate the tilemap
 tilemap = [[random.randint(0, 3) for e in range(MAPWIDTH)] for e in range(
@@ -60,6 +67,19 @@ textures = {
     FARM: pygame.image.load("images/farm.png"),
     PASTURE: pygame.image.load("images/pasture.png"),
     COTTAGE: pygame.image.load("images/cottage.png"),
+    CLOUD: pygame.image.load("images/cloud.png")
+}
+
+winter_textures = {
+    WATER: pygame.image.load("images/snow_water.png"),
+    DIRT: pygame.image.load("images/dirt.png"),
+    GRASS: pygame.image.load("images/snow_grass.png"),
+    FOREST: pygame.image.load("images/snow_forest.png"),
+    HOUSE: pygame.image.load("images/house.png"),
+    FARM: pygame.image.load("images/farm.png"),
+    PASTURE: pygame.image.load("images/snow_pasture.png"),
+    COTTAGE: pygame.image.load("images/snow_cottage.png"),
+    CLOUD: pygame.image.load("images/cloud.png")
 }
 
 # The Unit class
@@ -117,14 +137,19 @@ def end():
     # Ending stuff, pretty ugly right now
     DISPLAYSURF.fill(Color("black"))
     lblEnd1 = large_font.render("A ship comes to rescue you!", 1, (255,255,255))
-    lblEnd2 = large_font.render("Thank you for playing!", 1, (255,255,255))
+    lblEnd2 = large_font.render("Your score was {}.".format(score), 1,
+                                (255,255,255))
+    lblEnd3 = large_font.render("Thank you for playing!", 1, (255,255,255))
     DISPLAYSURF.blit(lblEnd1, (0, 0))
     pygame.display.update()
-    time.sleep(4)
+    time.sleep(5)
     DISPLAYSURF.fill(Color("black"))
     DISPLAYSURF.blit(lblEnd2, (0, 0))
     pygame.display.update()
-    time.sleep(4)
+    time.sleep(5)
+    DISPLAYSURF.fill(Color("black"))
+    DISPLAYSURF.blit(lblEnd3, (0, 0))
+    time.sleep(5)
     pygame.quit()
     sys.exit()
 
@@ -146,6 +171,7 @@ while running:
                 food += fpt
                 food -= 1
                 ttw -= 1
+                score += 1
     
             if food < 1:
                 # If you don't have any food you lose!
@@ -211,6 +237,7 @@ while running:
                     has_house = True
                     house_pos = player.pos
                     fpt += 1
+                    score += 5
 
             # Build a farm (+1 fpt)
             elif event.key == K_2:
@@ -220,6 +247,7 @@ while running:
                     tilemap[player.pos[1]][player.pos[0]] = 5
                     moved = True
                     fpt += 1
+                    score += 3
 
             # Build a pasture
             elif event.key == K_3:
@@ -228,6 +256,7 @@ while running:
                     if tilemap[player.pos[1]][player.pos[0]] == 2:
                         tilemap[player.pos[1]][player.pos[0]] = 6
                         moved = True
+                        score += 3
 
             # Build a cottage
             elif event.key == K_4:
@@ -236,6 +265,7 @@ while running:
                     if tilemap[player.pos[1]][player.pos[0]] == 3:
                         tilemap[player.pos[1]][player.pos[0]] = 7
                         moved = True
+                        score += 3
 
             # Make clothes
             elif event.key == K_0:
@@ -244,6 +274,7 @@ while running:
                     clothes = True
                     moved = True
                     hpt -= 1
+                    score += 3
 
             # Hunt
             elif event.key == K_h:
@@ -251,6 +282,7 @@ while running:
                     if random.randint(0, 1) == 1:
                         food +=  3
                         log = "You caught a {}.".format(random.choice(animals))
+                        score += 1
 
                     else:
                         food -= 1
@@ -298,15 +330,30 @@ while running:
                         food -= 5
                     else:
                         heat -= hpt
+    if winter == False:
+        # Draw the map
+        for row in range(MAPHEIGHT):
+            for column in range(MAPWIDTH):
+                DISPLAYSURF.blit(textures[tilemap[row][column]],
+                                 (column*TILESIZE, row*TILESIZE))
+    else:
+        # Draw the winter textures
+        for row in range(MAPHEIGHT):
+            for column in range(MAPWIDTH):
+                DISPLAYSURF.blit(winter_textures[tilemap[row][column]],
+                                 (column*TILESIZE, row*TILESIZE))
+    
 
-    # Draw the map
-    for row in range(MAPHEIGHT):
-        for column in range(MAPWIDTH):
-            DISPLAYSURF.blit(textures[tilemap[row][column]],
-                             (column*TILESIZE, row*TILESIZE))
+    # Draw the cloud
+    DISPLAYSURF.blit(textures[CLOUD].convert_alpha(),(cloudx,cloudy))
+    cloudx += 1
+    if cloudx > MAPWIDTH*TILESIZE:
+        cloudy = random.randint(0, MAPHEIGHT*TILESIZE)
+        cloudx = -200
     # Draw the player
     player.draw()
     pygame.display.update()
+    cloudClock.tick(24)
     DISPLAYSURF.fill(Color("black"))
     text()
 
