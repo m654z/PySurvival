@@ -26,9 +26,8 @@ house_pos = [0,0]
 season = "Summer"
 winter = False
 running = True # If this is off it plays the end sequence thing
-ttw = 30 # Turns to winter
+ttw = 50 # Turns to winter
 clothes = False
-score = 0
 
 # Tilemap tiles
 WATER = 0
@@ -59,27 +58,27 @@ tilemap[0][0] = 3 # Make sure that the starting position is a forest
 
 # Textures for the tiles
 textures = {
-    WATER: pygame.image.load("images/water.png"),
-    DIRT: pygame.image.load("images/dirt.png"),
-    GRASS: pygame.image.load("images/grass.png"),
-    FOREST: pygame.image.load("images/forest.png"),
-    HOUSE: pygame.image.load("images/house.png"),
-    FARM: pygame.image.load("images/farm.png"),
-    PASTURE: pygame.image.load("images/pasture.png"),
-    COTTAGE: pygame.image.load("images/cottage.png"),
-    CLOUD: pygame.image.load("images/cloud.png")
+    WATER: pygame.image.load("water.png"),
+    DIRT: pygame.image.load("dirt.png"),
+    GRASS: pygame.image.load("grass.png"),
+    FOREST: pygame.image.load("forest.png"),
+    HOUSE: pygame.image.load("house.png"),
+    FARM: pygame.image.load("farm.png"),
+    PASTURE: pygame.image.load("pasture.png"),
+    COTTAGE: pygame.image.load("cottage.png"),
+    CLOUD: pygame.image.load("cloud.png")
 }
 
 winter_textures = {
-    WATER: pygame.image.load("images/snow_water.png"),
-    DIRT: pygame.image.load("images/dirt.png"),
-    GRASS: pygame.image.load("images/snow_grass.png"),
-    FOREST: pygame.image.load("images/snow_forest.png"),
-    HOUSE: pygame.image.load("images/house.png"),
-    FARM: pygame.image.load("images/farm.png"),
-    PASTURE: pygame.image.load("images/snow_pasture.png"),
-    COTTAGE: pygame.image.load("images/snow_cottage.png"),
-    CLOUD: pygame.image.load("images/cloud.png")
+    WATER: pygame.image.load("snow_water.png"),
+    DIRT: pygame.image.load("dirt.png"),
+    GRASS: pygame.image.load("snow_grass.png"),
+    FOREST: pygame.image.load("snow_forest.png"),
+    HOUSE: pygame.image.load("house.png"),
+    FARM: pygame.image.load("farm.png"),
+    PASTURE: pygame.image.load("snow_pasture.png"),
+    COTTAGE: pygame.image.load("snow_cottage.png"),
+    CLOUD: pygame.image.load("cloud.png")
 }
 
 # The Unit class
@@ -100,7 +99,7 @@ class Unit:
 
 # Set everything up
 pygame.init()
-icon = pygame.image.load("images/icon.png")
+icon = pygame.image.load("icon.png")
 pygame.display.set_caption("PySurvival")
 pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((MAPWIDTH*TILESIZE, MAPHEIGHT*TILESIZE+100))
@@ -137,24 +136,19 @@ def end():
     # Ending stuff, pretty ugly right now
     DISPLAYSURF.fill(Color("black"))
     lblEnd1 = large_font.render("A ship comes to rescue you!", 1, (255,255,255))
-    lblEnd2 = large_font.render("Your score was {}.".format(score), 1,
-                                (255,255,255))
-    lblEnd3 = large_font.render("Thank you for playing!", 1, (255,255,255))
+    lblEnd2 = large_font.render("Thank you for playing!", 1, (255,255,255))
     DISPLAYSURF.blit(lblEnd1, (0, 0))
     pygame.display.update()
-    time.sleep(5)
+    time.sleep(4)
     DISPLAYSURF.fill(Color("black"))
     DISPLAYSURF.blit(lblEnd2, (0, 0))
     pygame.display.update()
-    time.sleep(5)
-    DISPLAYSURF.fill(Color("black"))
-    DISPLAYSURF.blit(lblEnd3, (0, 0))
-    time.sleep(5)
+    time.sleep(4)
     pygame.quit()
     sys.exit()
 
 # Set up a unit called player
-player = Unit("player", [0,0], "images/player.png", DISPLAYSURF)
+player = Unit("player", [0,0], "player.png", DISPLAYSURF)
 
 while running:
     for event in pygame.event.get():
@@ -171,7 +165,6 @@ while running:
                 food += fpt
                 food -= 1
                 ttw -= 1
-                score += 1
     
             if food < 1:
                 # If you don't have any food you lose!
@@ -193,7 +186,7 @@ while running:
                 season = "Winter"
                 winter = True
                 fpt = fpt / 2 # During winter you make less food
-                ttw = 30
+                ttw = 50
                 hpt = 3 # Also, you lose 3 heat per turn without any clothes
                     
             # Handle arrow keys
@@ -237,7 +230,6 @@ while running:
                     has_house = True
                     house_pos = player.pos
                     fpt += 1
-                    score += 5
 
             # Build a farm (+1 fpt)
             elif event.key == K_2:
@@ -247,7 +239,6 @@ while running:
                     tilemap[player.pos[1]][player.pos[0]] = 5
                     moved = True
                     fpt += 1
-                    score += 3
 
             # Build a pasture
             elif event.key == K_3:
@@ -256,7 +247,6 @@ while running:
                     if tilemap[player.pos[1]][player.pos[0]] == 2:
                         tilemap[player.pos[1]][player.pos[0]] = 6
                         moved = True
-                        score += 3
 
             # Build a cottage
             elif event.key == K_4:
@@ -265,7 +255,6 @@ while running:
                     if tilemap[player.pos[1]][player.pos[0]] == 3:
                         tilemap[player.pos[1]][player.pos[0]] = 7
                         moved = True
-                        score += 3
 
             # Make clothes
             elif event.key == K_0:
@@ -274,7 +263,6 @@ while running:
                     clothes = True
                     moved = True
                     hpt -= 1
-                    score += 3
 
             # Hunt
             elif event.key == K_h:
@@ -282,7 +270,6 @@ while running:
                     if random.randint(0, 1) == 1:
                         food +=  3
                         log = "You caught a {}.".format(random.choice(animals))
-                        score += 1
 
                     else:
                         food -= 1
@@ -309,9 +296,16 @@ while running:
             # Gain heat in a house or a cottage
             elif event.key == K_a:
                 if tilemap[player.pos[1]][player.pos[0]] == 4 or tilemap[player.pos[1]][player.pos[0]] == 7:
-                    if heat < 36:
-                        heat += 5
-                        moved = True
+                    if winter == True:
+                        if heat < 36 and wood > 4:
+                            heat += 5
+                            wood -= 2
+                            moved = True
+                    else:
+                        if heat < 36 and wood > 0:
+                            heat += 5
+                            wood -= 1
+                            moved = True
 
             # Reset the map
             elif event.key == K_F5:

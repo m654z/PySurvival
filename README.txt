@@ -4,7 +4,7 @@ PySurvival|
 
 PySurvival is a game where you find yourself on an island.
 You can survive by getting food by farming and hunting, keeping warm and building buildings.
-The goal is to survive 60 turns. However, at turn 30 the season changes to winter and your food production is halved and you lose more heat.
+The goal is to survive 100 turns. However, at turn 50 the season changes to winter and your food production is halved and you lose more heat.
 
 Controls
 --------
@@ -30,7 +30,7 @@ Chopping forests - Gain 10 wood. The Forest tile turns into a Grass tile.
 
 Seeds - You have a 33% chance of getting 3 seeds.
 
-Heat - The maximum heat you can have is 40. You lose 1 heat every move, except for when you're on a house or a cottage. During winter you will lose 3 heat every move. Making clothes reduces the amount of heat lost by 1.
+Heat - The maximum heat you can have is 40. You lose 1 heat every move, except for when you're on a house or a cottage. During winter you will lose 3 heat every move. Making clothes reduces the amount of heat lost by 1. You can "warm up" in a house or cottage. However, this costs 1 wood in the summer and 2 wood in the winter.
 
 Wool - Used to make clothes. You can make clothes with 10 wool.
 
